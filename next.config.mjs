@@ -7,7 +7,8 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**.supabase.co", // Mengizinkan semua gambar dari Supabase
+        hostname: "dxlymbpdluttnqkgcwio.supabase.co",
+        pathname: "/storage/v1/object/public/**",
       },
     ],
   },
