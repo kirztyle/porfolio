@@ -299,7 +299,7 @@ export default async function Home() {
       <footer id="contact" className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
         <div className="mx-auto max-w-5xl px-6 py-10">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-            Let's Connect
+            Let&apos;s Connect
           </h2>
           <p className="mt-2 max-w-xl text-slate-600 dark:text-slate-400">
             Interested in collaborating or discussing enterprise data solutions? Feel free to reach out.
