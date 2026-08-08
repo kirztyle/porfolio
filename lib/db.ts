@@ -1,36 +1,26 @@
-import { Pool, PoolClient } from "pg";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Pool } from 'pg';
 
 const globalForDb = globalThis as unknown as { pool: Pool | undefined };
 
-export const pool =
-  globalForDb.pool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-    max: 3,                    // Kurangi max connections (dari 10 ke 3)
-    idleTimeoutMillis: 10000,  // Tutup koneksi idle setelah 10 detik
-    connectionTimeoutMillis: 15000, // Naikkan timeout dari 5 detik ke 15 detik
-    statement_timeout: 30000,  // Timeout untuk query yang terlalu lama
-    query_timeout: 30000,
-    keepAlive: true,           // Jaga koneksi tetap hidup
-    allowExitOnIdle: true,     // Boleh exit jika semua koneksi idle
-  });
+export const pool = globalForDb.pool ?? new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { 
+    rejectUnauthorized: false 
+  },
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 15000, // Timeout 15 detik
+});
 
-if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;
+if (process.env.NODE_ENV !== 'production') globalForDb.pool = pool;
 
-export async function query<T = any>(
-  text: string,
-  params?: any[]
-): Promise<T[]> {
-  let client: PoolClient | null = null;
+export async function query<T = any>(text: string, params?: any[]): Promise<T[]> {
+  const client = await pool.connect();
   try {
-    client = await pool.connect();
     const res = await client.query(text, params);
     return res.rows as T[];
-  } catch (error: any) {
-    console.error("Database query error:", error.message);
-    throw new Error(`Database error: ${error.message}`);
   } finally {
-    if (client) client.release(); // WAJIB release koneksi
+    client.release();
   }
 }
