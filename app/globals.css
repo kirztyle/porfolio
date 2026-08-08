@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0e14;
+  --panel: #121826;
+  --panel-2: #0d1220;
+  --hairline: #232c3d;
+  --hairline-soft: #1a2231;
+  --text-primary: #edf1f7;
+  --text-muted: #8592a6;
+  --text-dim: #566178;
+  --accent-teal: #35d0ba;
+  --accent-amber: #e8a33d;
+  --accent-red: #e5484d;
+  --accent-green: #4ade80;
+
+  --font-display: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  --font-body: ui-sans-serif, "Inter", "Segoe UI", system-ui, "Helvetica Neue", Arial,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 900px 500px at 10% -10%, rgba(53, 208, 186, 0.08), transparent),
+    radial-gradient(ellipse 700px 500px at 100% 0%, rgba(232, 163, 61, 0.06), transparent);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::selection {
+  background: var(--accent-teal);
+  color: #0a0e14;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hairline);
+  border-radius: 999px;
+}
