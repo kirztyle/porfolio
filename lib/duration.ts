@@ -46,7 +46,8 @@ function parseMonthYear(text?: string | null): Date | null {
  */
 export function formatDuration(
   periodStart?: string | null,
-  periodEnd?: string | null
+  periodEnd?: string | null,
+  lang: "id" | "en" = "id"
 ): string | null {
   const start = parseMonthYear(periodStart);
   if (!start) return null;
@@ -61,9 +62,12 @@ export function formatDuration(
   const years = Math.floor(months / 12);
   const remMonths = months % 12;
 
+  const yearWord = lang === "en" ? (years === 1 ? "year" : "years") : "tahun";
+  const monthWord = lang === "en" ? (remMonths === 1 ? "month" : "months") : "bulan";
+
   const parts: string[] = [];
-  if (years > 0) parts.push(`${years} tahun`);
-  if (remMonths > 0 || years === 0) parts.push(`${remMonths} bulan`);
+  if (years > 0) parts.push(`${years} ${yearWord}`);
+  if (remMonths > 0 || years === 0) parts.push(`${remMonths} ${monthWord}`);
 
   return parts.join(" ");
 }

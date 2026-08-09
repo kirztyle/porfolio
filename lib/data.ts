@@ -4,8 +4,10 @@ export type Profile = {
   id: number;
   name: string;
   title: string;
+  title_en: string | null;
   photo_url: string | null;
   description: string;
+  description_en: string | null;
   status: "open" | "limited" | "closed";
   email: string | null;
   phone: string | null;
@@ -18,10 +20,12 @@ export type Experience = {
   id: number;
   company: string;
   role: string;
+  role_en: string | null;
   location: string | null;
   period_start: string | null;
   period_end: string | null;
   description: string | null;
+  description_en: string | null;
   sort_order: number;
 };
 
@@ -46,10 +50,12 @@ export type Education = {
 export type Project = {
   id: number;
   title: string;
+  title_en: string | null;
   description: string | null;
+  description_en: string | null;
   tags: string | null;
   link: string | null;
-  image_url: string | null;   // ← tambahkan ini
+  image_url: string | null;
   sort_order: number;
 };
 
