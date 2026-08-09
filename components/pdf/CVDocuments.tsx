@@ -130,10 +130,10 @@ export function CVDocument({
             }`;
 
             return (
-              <View key={exp.id} style={{ marginBottom: 8 }} wrap={false}>
-                <View style={styles.row}>
-                  <Text style={styles.bold}>{role}</Text>
-                  <Text style={styles.bold}>{period}</Text>
+                <View key={exp.id} style={{ marginBottom: 8 }}>
+                    <View style={styles.row}>
+                    <Text style={[styles.bold, { flex: 1, marginRight: 8 }]}>{role}</Text>
+                    <Text style={[styles.bold, { textAlign: "right" }]}>{period}</Text>
                 </View>
                 <Text style={styles.italic}>
                   {exp.company}
