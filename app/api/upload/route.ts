@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { data: urlData } = supabase.storage
-      .from("portfolio-assets")
+      .from("portfolio")
       .getPublicUrl(filePath);
 
     return NextResponse.json({ url: urlData.publicUrl });
