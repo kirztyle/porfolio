@@ -76,6 +76,15 @@ export default function PortfolioView({
               </a>
             </nav>
             <LanguageToggle lang={lang} onChange={changeLang} />
+             <a href={`/api/cv/pdf?lang=${lang}`}
+              download
+              className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              CV
+            </a>
             <ThemeToggle />
           </div>
         </div>
