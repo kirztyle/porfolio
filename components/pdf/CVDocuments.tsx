@@ -123,6 +123,12 @@ export function CVDocument({
           <Text style={styles.sectionTitle}>{L("experience", lang)}</Text>
           {experiences.map((exp) => {
             const role = pick(exp.role, exp.role_en, lang);
+            const [roleTitle, roleSubtitle] = splitRole(role);   
+            function splitRole(text: string): [string, string | null] {
+            const match = text.match(/^(.*?)\s*[–-]\s*(.*)$/);
+            if (match) return [match[1].trim(), match[2].trim()];
+            return [text, null];
+            }
             const desc = pick(exp.description, exp.description_en, lang);
             const duration = formatDuration(exp.period_start, exp.period_end, lang);
             const period = `${exp.period_start || ""} – ${exp.period_end || presentLabel}${
@@ -132,9 +138,12 @@ export function CVDocument({
             return (
                 <View key={exp.id} style={{ marginBottom: 8 }}>
                     <View style={styles.row}>
-                    <Text style={[styles.bold, { flex: 1, marginRight: 8 }]}>{role}</Text>
+                    <View style={{ flex: 1, marginRight: 8 }}>
+                        <Text style={styles.bold}>{roleTitle}</Text>
+                        {roleSubtitle ? <Text style={styles.bold}>{roleSubtitle}</Text> : null}
+                    </View>
                     <Text style={[styles.bold, { textAlign: "right" }]}>{period}</Text>
-                </View>
+                    </View>
                 <Text style={styles.italic}>
                   {exp.company}
                   {exp.location ? `, ${exp.location}` : ""}
