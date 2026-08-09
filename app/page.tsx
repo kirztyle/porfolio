@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getPortfolioData } from "@/lib/data";
+import { formatDuration } from "@/lib/duration";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const dynamic = "force-dynamic";
@@ -112,6 +113,14 @@ export default async function Home() {
             >
               <div className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 {exp.period_start} {exp.period_end ? `— ${exp.period_end}` : "— Present"}
+                {(() => {
+                  const duration = formatDuration(exp.period_start, exp.period_end);
+                  return duration ? (
+                    <span className="mt-0.5 block text-xs text-slate-400 dark:text-slate-500">
+                      {duration}
+                    </span>
+                  ) : null;
+                })()}
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -206,6 +215,11 @@ export default async function Home() {
                 !p.link && "cursor-default hover:shadow-sm hover:ring-slate-200"
               }`}
             >
+              {p.image_url && (
+                <div className="relative -mx-6 -mt-6 mb-4 h-40 overflow-hidden rounded-t-xl bg-slate-100 dark:bg-slate-700">
+                  <Image src={p.image_url} alt={p.title} fill className="object-cover" />
+                </div>
+              )}
               <h3 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 transition-colors">
                 {p.title}
               </h3>

@@ -164,8 +164,9 @@ export default function AdminDashboard({
               initialItems={projects}
               itemTitle={(i) => String(i.title ?? "")}
               itemSubtitle={(i) => String(i.tags ?? "")}
-              emptyItem={{ title: "", description: "", tags: "", link: "" }}
+              emptyItem={{ title: "", description: "", tags: "", link: "", image_url: "" }}
               fields={[
+                { key: "image_url", label: "Gambar Project", type: "image" },
                 { key: "title", label: "Judul Project", type: "text" },
                 { key: "description", label: "Deskripsi", type: "textarea" },
                 { key: "tags", label: "Tags", type: "text", hint: "Pisahkan dengan koma" },

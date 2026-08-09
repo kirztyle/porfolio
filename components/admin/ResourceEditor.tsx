@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 type Field = {
   key: string;
   label: string;
-  type: "text" | "textarea";
+  type: "text" | "textarea" | "image";
   placeholder?: string;
   hint?: string;
-  half?: boolean; // render side-by-side on desktop
 };
 
 type Item = Record<string, string | number | null | undefined>;
 
 type Props = {
-  endpoint: string; // e.g. "/api/experiences"
+  endpoint: string;
   fields: Field[];
   initialItems: Item[];
   itemTitle: (item: Item) => string;
@@ -38,6 +38,7 @@ export default function ResourceEditor({
   const [editingId, setEditingId] = useState<number | "new" | null>(null);
   const [draft, setDraft] = useState<Item>(emptyItem);
   const [saving, setSaving] = useState(false);
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   function startEdit(item: Item) {
     setEditingId(Number(item.id));
@@ -52,6 +53,25 @@ export default function ResourceEditor({
   function cancelEdit() {
     setEditingId(null);
     setDraft(emptyItem);
+  }
+
+  async function handleImageUpload(fieldKey: string, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingField(fieldKey);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Upload gagal");
+        return;
+      }
+      setDraft((d) => ({ ...d, [fieldKey]: data.url }));
+    } finally {
+      setUploadingField(null);
+    }
   }
 
   async function save() {
@@ -161,11 +181,15 @@ export default function ResourceEditor({
         <div className="mt-4 rounded-sm border border-teal/40 bg-panel2/60 p-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {fields.map((f) => (
-              <div key={f.key} className={f.type === "textarea" ? "sm:col-span-2" : ""}>
+              <div
+                key={f.key}
+                className={f.type === "textarea" || f.type === "image" ? "sm:col-span-2" : ""}
+              >
                 <label className="block font-display text-[10px] tracking-[0.15em] text-dim">
                   {f.label.toUpperCase()}
                 </label>
-                {f.type === "textarea" ? (
+
+                {f.type === "textarea" && (
                   <textarea
                     value={String(draft[f.key] ?? "")}
                     onChange={(e) => setDraft({ ...draft, [f.key]: e.target.value })}
@@ -173,7 +197,9 @@ export default function ResourceEditor({
                     rows={4}
                     className="mt-1.5 w-full rounded-sm border border-hairline bg-bg px-3 py-2 font-body text-sm text-primary outline-none focus:border-teal"
                   />
-                ) : (
+                )}
+
+                {f.type === "text" && (
                   <input
                     type="text"
                     value={String(draft[f.key] ?? "")}
@@ -182,6 +208,37 @@ export default function ResourceEditor({
                     className="mt-1.5 w-full rounded-sm border border-hairline bg-bg px-3 py-2 font-body text-sm text-primary outline-none focus:border-teal"
                   />
                 )}
+
+                {f.type === "image" && (
+                  <div className="mt-1.5 flex items-center gap-4">
+                    <div className="h-20 w-32 shrink-0 overflow-hidden rounded-sm border border-hairline bg-bg">
+                      {draft[f.key] ? (
+                        <Image
+                          src={String(draft[f.key])}
+                          alt="Preview"
+                          width={128}
+                          height={80}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center font-display text-[10px] text-dim">
+                          NO_IMAGE
+                        </div>
+                      )}
+                    </div>
+                    <label className="cursor-pointer rounded-sm border border-hairline px-3 py-2 font-display text-[11px] tracking-wide text-muted hover:border-teal hover:text-teal transition-colors">
+                      {uploadingField === f.key ? "MENGUNGGAH..." : "PILIH GAMBAR"}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        className="hidden"
+                        onChange={(e) => handleImageUpload(f.key, e)}
+                        disabled={uploadingField === f.key}
+                      />
+                    </label>
+                  </div>
+                )}
+
                 {f.hint && <p className="mt-1 font-body text-[11px] text-dim">{f.hint}</p>}
               </div>
             ))}

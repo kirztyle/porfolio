@@ -49,6 +49,7 @@ export type Project = {
   description: string | null;
   tags: string | null;
   link: string | null;
+  image_url: string | null;   // ← tambahkan ini
   sort_order: number;
 };
 
