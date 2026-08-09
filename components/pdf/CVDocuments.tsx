@@ -142,7 +142,7 @@ export function CVDocument({
                         <Text style={styles.bold}>{roleTitle}</Text>
                         {roleSubtitle ? <Text style={styles.bold}>{roleSubtitle}</Text> : null}
                     </View>
-                    <Text style={[styles.bold, { textAlign: "right" }]}>{period}</Text>
+                    <Text style={[styles.bold, { textAlign: "right" }]}></Text>
                     </View>
                 <Text style={styles.italic}>
                   {exp.company}
