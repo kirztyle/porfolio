@@ -8,8 +8,10 @@ export default function ProfileForm({ initial }: { initial: Profile | null }) {
   const [form, setForm] = useState({
     name: initial?.name || "",
     title: initial?.title || "",
+    title_en: initial?.title_en || "",
     photo_url: initial?.photo_url || "",
     description: initial?.description || "",
+    description_en: initial?.description_en || "",
     status: initial?.status || "open",
     email: initial?.email || "",
     phone: initial?.phone || "",
@@ -110,27 +112,6 @@ export default function ProfileForm({ initial }: { initial: Profile | null }) {
               placeholder="Nama lengkap"
             />
           </Field>
-          <Field label="Jabatan / Tagline">
-            <input
-              value={form.title}
-              onChange={(e) => set("title", e.target.value)}
-              className="input"
-              placeholder="cth. IT Developer — Risk Analytics"
-            />
-          </Field>
-        </div>
-
-        <Field label="Deskripsi Diri">
-          <textarea
-            value={form.description}
-            onChange={(e) => set("description", e.target.value)}
-            rows={5}
-            className="input"
-            placeholder="Ceritakan tentang dirimu, pengalaman, dan keahlian utama"
-          />
-        </Field>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Field label="Status Ketersediaan">
             <select
               value={form.status}
@@ -142,6 +123,64 @@ export default function ProfileForm({ initial }: { initial: Profile | null }) {
               <option value="closed">Not available</option>
             </select>
           </Field>
+        </div>
+
+        {/* --- Versi Indonesia --- */}
+        <div className="rounded-sm border border-hairline p-4">
+          <p className="mb-3 font-display text-[10px] tracking-[0.15em] text-teal">
+            VERSI INDONESIA
+          </p>
+          <div className="space-y-4">
+            <Field label="Jabatan / Tagline">
+              <input
+                value={form.title}
+                onChange={(e) => set("title", e.target.value)}
+                className="input"
+                placeholder="cth. IT Developer — Risk Analytics"
+              />
+            </Field>
+            <Field label="Deskripsi Diri">
+              <textarea
+                value={form.description}
+                onChange={(e) => set("description", e.target.value)}
+                rows={5}
+                className="input"
+                placeholder="Ceritakan tentang dirimu, pengalaman, dan keahlian utama"
+              />
+            </Field>
+          </div>
+        </div>
+
+        {/* --- Versi Inggris --- */}
+        <div className="rounded-sm border border-hairline p-4">
+          <p className="mb-3 font-display text-[10px] tracking-[0.15em] text-amber">
+            ENGLISH VERSION (opsional)
+          </p>
+          <div className="space-y-4">
+            <Field label="Title / Tagline (EN)">
+              <input
+                value={form.title_en}
+                onChange={(e) => set("title_en", e.target.value)}
+                className="input"
+                placeholder="e.g. IT Developer — Risk Analytics"
+              />
+            </Field>
+            <Field label="About Me (EN)">
+              <textarea
+                value={form.description_en}
+                onChange={(e) => set("description_en", e.target.value)}
+                rows={5}
+                className="input"
+                placeholder="Tell about yourself, experience, and core skills"
+              />
+            </Field>
+          </div>
+          <p className="mt-2 font-body text-[11px] text-dim">
+            Kalau dikosongkan, halaman publik akan otomatis pakai versi Indonesia saat mode EN dipilih.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Field label="Lokasi">
             <input
               value={form.location}

@@ -104,18 +104,34 @@ export default function AdminDashboard({
               initialItems={experiences}
               itemTitle={(i) => `${i.role} — ${i.company}`}
               itemSubtitle={(i) => [i.period_start, i.period_end].filter(Boolean).join(" — ")}
-              emptyItem={{ company: "", role: "", location: "", period_start: "", period_end: "", description: "" }}
+              emptyItem={{
+                company: "",
+                role: "",
+                role_en: "",
+                location: "",
+                period_start: "",
+                period_end: "",
+                description: "",
+                description_en: "",
+              }}
               fields={[
-                { key: "role", label: "Jabatan", type: "text" },
+                { key: "role", label: "Jabatan (ID)", type: "text" },
+                { key: "role_en", label: "Role (EN)", type: "text", hint: "Opsional, fallback ke versi ID kalau kosong" },
                 { key: "company", label: "Perusahaan", type: "text" },
                 { key: "location", label: "Lokasi", type: "text" },
                 { key: "period_start", label: "Mulai", type: "text", placeholder: "cth. Aug 2025" },
-                { key: "period_end", label: "Selesai", type: "text", placeholder: "cth. Present" },
+                { key: "period_end", label: "Selesai", type: "text", placeholder: "cth. Present (kosongkan jika masih berjalan)" },
                 {
                   key: "description",
-                  label: "Deskripsi Tugas (bullet)",
+                  label: "Deskripsi Tugas (ID, bullet)",
                   type: "textarea",
                   hint: "Satu poin per baris — setiap baris akan tampil sebagai bullet.",
+                },
+                {
+                  key: "description_en",
+                  label: "Job Description (EN, bullet)",
+                  type: "textarea",
+                  hint: "Opsional. One point per line, fallback ke versi ID kalau kosong.",
                 },
               ]}
             />
@@ -164,11 +180,21 @@ export default function AdminDashboard({
               initialItems={projects}
               itemTitle={(i) => String(i.title ?? "")}
               itemSubtitle={(i) => String(i.tags ?? "")}
-              emptyItem={{ title: "", description: "", tags: "", link: "", image_url: "" }}
+              emptyItem={{
+                title: "",
+                title_en: "",
+                description: "",
+                description_en: "",
+                tags: "",
+                link: "",
+                image_url: "",
+              }}
               fields={[
                 { key: "image_url", label: "Gambar Project", type: "image" },
-                { key: "title", label: "Judul Project", type: "text" },
-                { key: "description", label: "Deskripsi", type: "textarea" },
+                { key: "title", label: "Judul Project (ID)", type: "text" },
+                { key: "title_en", label: "Project Title (EN)", type: "text", hint: "Opsional, fallback ke versi ID kalau kosong" },
+                { key: "description", label: "Deskripsi (ID)", type: "textarea" },
+                { key: "description_en", label: "Description (EN)", type: "textarea", hint: "Opsional, fallback ke versi ID kalau kosong" },
                 { key: "tags", label: "Tags", type: "text", hint: "Pisahkan dengan koma" },
                 { key: "link", label: "Link (opsional)", type: "text", placeholder: "https://..." },
               ]}
