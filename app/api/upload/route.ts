@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const filePath = `profiles/${filename}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("portfolio-assets") // Pastikan nama bucket ini SAMA PERSIS dengan yang di Supabase
+      .from("portfolio") // Pastikan nama bucket ini SAMA PERSIS dengan yang di Supabase
       .upload(filePath, buffer, {
         contentType: file.type,
         upsert: true,
