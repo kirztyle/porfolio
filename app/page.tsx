@@ -216,8 +216,13 @@ export default async function Home() {
               }`}
             >
               {p.image_url && (
-                <div className="relative -mx-6 -mt-6 mb-4 h-40 overflow-hidden rounded-t-xl bg-slate-100 dark:bg-slate-700">
-                  <Image src={p.image_url} alt={p.title} fill className="object-cover" />
+                <div className="relative -mx-6 -mt-6 mb-4 h-48 overflow-hidden rounded-t-xl bg-slate-100 dark:bg-slate-800">
+                  <Image
+                    src={p.image_url}
+                    alt={p.title}
+                    fill
+                    className="object-contain p-2"
+                  />
                 </div>
               )}
               <h3 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 transition-colors">
