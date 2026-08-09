@@ -130,10 +130,7 @@ export function CVDocument({
             return [text, null];
             }
             const desc = pick(exp.description, exp.description_en, lang);
-            const duration = formatDuration(exp.period_start, exp.period_end, lang);
-            const period = `${exp.period_start || ""} – ${exp.period_end || presentLabel}${
-              duration ? ` (${duration})` : ""
-            }`;
+            const period = `${exp.period_start || ""} – ${exp.period_end || presentLabel}`;
 
             return (
                 <View key={exp.id} style={{ marginBottom: 8 }}>
@@ -142,7 +139,7 @@ export function CVDocument({
                         <Text style={styles.bold}>{roleTitle}</Text>
                         {roleSubtitle ? <Text style={styles.bold}>{roleSubtitle}</Text> : null}
                     </View>
-                    <Text style={[styles.bold, { textAlign: "right" }]}></Text>
+                    <Text style={[styles.bold, { textAlign: "right" }]}>{period}</Text>
                     </View>
                 <Text style={styles.italic}>
                   {exp.company}
