@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { parseImages } from "@/lib/validate";
+import { parseImages, parseOptionalId } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +18,10 @@ export async function PUT(
   if (images === null) {
     return NextResponse.json({ error: "images harus berupa array string" }, { status: 400 });
   }
+  const experienceId = parseOptionalId(b.experience_id);
+  if (Number.isNaN(experienceId)) {
+    return NextResponse.json({ error: "experience_id tidak valid" }, { status: 400 });
+  }
   const { data, error } = await createAdminClient()
     .from("projects")
     .update({
@@ -28,6 +32,8 @@ export async function PUT(
     tags: b.tags || "",
     link: b.link || "",
     sort_order: b.sort_order ?? 0,
+    // experience_id tidak dikirim -> kolom tidak diubah (aman sebelum migrasi 003)
+    ...(experienceId !== undefined ? { experience_id: experienceId } : {}),
     // images tidak dikirim -> kolom tidak diubah; jika dikirim, image_url ikut sinkron
     ...(images ? { images, image_url: images[0] || "" } : { image_url: b.image_url || "" }),
   })

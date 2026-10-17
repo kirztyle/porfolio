@@ -214,6 +214,17 @@ export default function AdminDashboard({
                 { key: "description_en", label: "Description (EN)", type: "textarea", hint: "Opsional, fallback ke versi ID kalau kosong" },
                 { key: "tags", label: "Tags", type: "text", hint: "Pisahkan dengan koma" },
                 { key: "link", label: "Link (opsional)", type: "text", placeholder: "https://..." },
+                {
+                  key: "experience_id",
+                  label: "Pengalaman Terkait",
+                  type: "select",
+                  placeholder: "— Tidak terkait —",
+                  hint: "Project akan ditautkan dari item pengalaman ini di halaman utama.",
+                  options: experiences.map((e) => ({
+                    value: String(e.id),
+                    label: `${e.role} — ${e.company}`,
+                  })),
+                },
               ]}
             />
           )}

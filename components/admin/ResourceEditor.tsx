@@ -7,9 +7,11 @@ import ImageGalleryField from "./ImageGalleryField";
 type Field = {
   key: string;
   label: string;
-  type: "text" | "textarea" | "image" | "gallery";
+  type: "text" | "textarea" | "image" | "gallery" | "select";
   placeholder?: string;
   hint?: string;
+  /** Pilihan untuk type "select". Value "" = kosong (dikirim sebagai ""). */
+  options?: { value: string; label: string }[];
 };
 
 export type Item = Record<string, unknown>;
@@ -243,6 +245,21 @@ export default function ResourceEditor({
                     placeholder={f.placeholder}
                     className="mt-1.5 w-full rounded-sm border border-hairline bg-bg px-3 py-2 font-body text-sm text-primary outline-none focus:border-teal"
                   />
+                )}
+
+                {f.type === "select" && (
+                  <select
+                    value={String(draft[f.key] ?? "")}
+                    onChange={(e) => setDraft({ ...draft, [f.key]: e.target.value })}
+                    className="mt-1.5 w-full rounded-sm border border-hairline bg-bg px-3 py-2 font-body text-sm text-primary outline-none focus:border-teal"
+                  >
+                    <option value="">{f.placeholder ?? "—"}</option>
+                    {f.options?.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
                 )}
 
                 {f.type === "gallery" && (

@@ -61,6 +61,12 @@ export default function PortfolioView({
       <WelcomeSplash
         name={name}
         photoUrl={profile?.photo_url}
+        socials={{
+          email: profile?.email,
+          phone: profile?.phone,
+          linkedin: profile?.linkedin,
+          instagram: profile?.instagram,
+        }}
         lang={lang}
         onLangChange={changeLang}
       />
@@ -187,6 +193,7 @@ export default function PortfolioView({
             const expDescription = pick(exp.description, exp.description_en, lang);
             const duration = formatDuration(exp.period_start, exp.period_end, lang);
             const presentLabel = t(dictionary.experience.present, lang);
+            const relatedProjects = projects.filter((p) => p.experience_id === exp.id);
 
             return (
               <div key={exp.id} className="grid grid-cols-1 gap-4 sm:grid-cols-[180px_1fr] sm:gap-8">
@@ -223,6 +230,23 @@ export default function PortfolioView({
                           </li>
                         ))}
                     </ul>
+                  )}
+                  {relatedProjects.length > 0 && (
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                        {t(dictionary.experience.relatedProjects, lang)}
+                      </span>
+                      {relatedProjects.map((p) => (
+                        <a
+                          key={p.id}
+                          href={`#project-${p.id}`}
+                          className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20 transition-colors hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:ring-blue-500/30 dark:hover:bg-blue-900/40"
+                        >
+                          {pick(p.title, p.title_en, lang)}
+                          <span aria-hidden="true">↓</span>
+                        </a>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>

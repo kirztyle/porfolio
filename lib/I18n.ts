@@ -25,6 +25,7 @@ export const dictionary = {
     },
     present: { id: "Sekarang", en: "Present" },
     empty: { id: "Belum ada data pengalaman kerja.", en: "No work experience yet." },
+    relatedProjects: { id: "Proyek terkait", en: "Related projects" },
   },
   skills: {
     heading: { id: "Keahlian Utama", en: "Core Expertise" },

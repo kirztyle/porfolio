@@ -58,6 +58,7 @@ export type Project = {
   image_url: string | null;
   images: string[];
   details: ProjectDetail[];
+  experience_id?: number | null; // kolom baru (migrasi 003); undefined jika belum ada
   sort_order: number;
 };
 
