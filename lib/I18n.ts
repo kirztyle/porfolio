@@ -57,6 +57,26 @@ export const dictionary = {
     emptyEducation: { id: "Belum ada data pendidikan.", en: "No education data yet." },
     emptyCertificates: { id: "Belum ada data sertifikat.", en: "No certificates yet." },
   },
+  cv: {
+    heading: { id: "Unduh CV", en: "Download CV" },
+    subtitle: {
+      id: "Tersedia dalam dua versi, pilih yang paling sesuai.",
+      en: "Available in two versions, pick the one that fits best.",
+    },
+    atsTitle: { id: "Versi ATS", en: "ATS Version" },
+    atsDesc: {
+      id: "Format ringkas satu kolom yang mudah dipindai cepat dan bisa langsung diunggah ke sistem rekrutmen (ATS).",
+      en: "A concise single-column format that's quick to scan and ready to upload into an applicant tracking system.",
+    },
+    creativeTitle: { id: "Versi Creative", en: "Creative Version" },
+    creativeDesc: {
+      id: "Tampilan visual dengan foto, timeline pengalaman, dan kartu proyek yang nyaman dibaca.",
+      en: "A visual layout with photo, experience timeline, and project cards that's easy to read.",
+    },
+    recommended: { id: "Ramah ATS", en: "ATS-friendly" },
+    download: { id: "Unduh PDF", en: "Download PDF" },
+    language: { id: "Bahasa CV", en: "CV language" },
+  },
   contact: {
     heading: { id: "Mari Terhubung", en: "Let's Connect" },
     subtitle: {

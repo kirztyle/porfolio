@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "dxlymbpdluttnqkgcwio.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      // Logo perusahaan di section Experience (lib/companyLogos.ts)
+      { protocol: "https", hostname: "www.pdsb.co.id", pathname: "/img/**" },
+      { protocol: "https", hostname: "www.hcml.co.id", pathname: "/wp-content/uploads/**" },
+      { protocol: "https", hostname: "upload.wikimedia.org", pathname: "/wikipedia/commons/**" },
+      { protocol: "https", hostname: "static.wixstatic.com", pathname: "/media/**" },
     ],
   },
 };

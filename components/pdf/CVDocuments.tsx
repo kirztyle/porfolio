@@ -1,6 +1,7 @@
-import type { ReactElement } from "react";
-import { Document, Page, Text, View, StyleSheet, Link } from "@react-pdf/renderer";
+import { Fragment, type ReactElement } from "react";
+import { Document, Page, Text, View, StyleSheet, Link, Font } from "@react-pdf/renderer";
 import { pick, type Lang } from "@/lib/I18n";
+import { formatMonthYear } from "@/lib/duration";
 import type {
   Profile,
   Experience,
@@ -9,6 +10,10 @@ import type {
   Project,
   Certificate,
 } from "@/lib/data";
+
+// Hyphenation bawaan react-pdf berbasis bahasa Inggris dan memotong kata Indonesia
+// di tempat yang salah ("meng-gunakan", "mengk-lasifikasikan"). Matikan saja.
+Font.registerHyphenationCallback((word) => [word]);
 
 const styles = StyleSheet.create({
   page: {
@@ -29,16 +34,26 @@ const styles = StyleSheet.create({
   },
   contactText: { fontSize: 10 },
   contactSep: { fontSize: 10, marginHorizontal: 4, color: "#888" },
-  hr: { borderBottomWidth: 1.2, borderBottomColor: "#1a1a1a", marginVertical: 9 },
-  sectionTitle: { fontSize: 11, fontFamily: "Helvetica-Bold", letterSpacing: 0.6, marginBottom: 4 },
+  sectionHead: {
+    marginTop: 9,
+    paddingTop: 9,
+    marginBottom: 4,
+    borderTopWidth: 1.2,
+    borderTopColor: "#1a1a1a",
+  },
+  sectionTitle: { fontSize: 11, fontFamily: "Helvetica-Bold", letterSpacing: 0.6 },
   sectionBody: { fontSize: 10.5, color: "#333", marginBottom: 3 },
   row: { flexDirection: "row", justifyContent: "space-between" },
   bold: { fontFamily: "Helvetica-Bold", color: "#1a1a1a" },
   italic: { fontFamily: "Helvetica-Oblique", marginBottom: 2, color: "#333" },
-  bullet: { marginLeft: 8, marginTop: 1 },
+  bulletRow: { flexDirection: "row", marginLeft: 4, marginTop: 1 },
+  bulletDot: { width: 10 },
+  bulletText: { flex: 1 },
 });
 
-const LABELS = {
+export const WEBSITE_URL = "https://rafiipro.vercel.app";
+
+export const LABELS = {
   summary: { id: "RINGKASAN PROFESIONAL", en: "PROFESSIONAL SUMMARY" },
   skills: { id: "KEAHLIAN", en: "SKILLS" },
   experience: { id: "PENGALAMAN PROFESIONAL", en: "PROFESSIONAL EXPERIENCE" },
@@ -46,9 +61,10 @@ const LABELS = {
   education: { id: "PENDIDIKAN", en: "EDUCATION" },
   certifications: { id: "SERTIFIKASI", en: "CERTIFICATIONS" },
   present: { id: "Sekarang", en: "Present" },
+  contact: { id: "KONTAK", en: "CONTACT" },
 } as const;
 
-function L(key: keyof typeof LABELS, lang: Lang) {
+export function L(key: keyof typeof LABELS, lang: Lang) {
   return LABELS[key][lang];
 }
 
@@ -91,7 +107,7 @@ export function CVDocument({
       key: "summary",
       node: (
         <>
-          <Text style={styles.sectionTitle}>{L("summary", lang)}</Text>
+          <SectionTitle>{L("summary", lang)}</SectionTitle>
           <Text style={styles.sectionBody}>{summary}</Text>
         </>
       ),
@@ -103,7 +119,7 @@ export function CVDocument({
       key: "skills",
       node: (
         <>
-          <Text style={styles.sectionTitle}>{L("skills", lang)}</Text>
+          <SectionTitle>{L("skills", lang)}</SectionTitle>
           {skills.map((s) => (
             <Text key={s.id} style={styles.sectionBody}>
               <Text style={styles.bold}>{s.category}: </Text>
@@ -120,39 +136,40 @@ export function CVDocument({
       key: "experience",
       node: (
         <>
-          <Text style={styles.sectionTitle}>{L("experience", lang)}</Text>
+          <SectionTitle>{L("experience", lang)}</SectionTitle>
           {experiences.map((exp) => {
             const role = pick(exp.role, exp.role_en, lang);
-            const [roleTitle, roleSubtitle] = splitRole(role);   
-            function splitRole(text: string): [string, string | null] {
-            const match = text.match(/^(.*?)\s*[–-]\s*(.*)$/);
-            if (match) return [match[1].trim(), match[2].trim()];
-            return [text, null];
-            }
+            const [roleTitle, roleSubtitle] = splitRole(role);
             const desc = pick(exp.description, exp.description_en, lang);
-            const period = `${exp.period_start || ""} – ${exp.period_end || presentLabel}`;
+            const period = `${formatMonthYear(exp.period_start, lang)} – ${
+              exp.period_end ? formatMonthYear(exp.period_end, lang) : presentLabel
+            }`;
 
             return (
-                <View key={exp.id} style={{ marginBottom: 8 }}>
-                    <View style={styles.row}>
+              <View key={exp.id} style={{ marginBottom: 8 }}>
+                {/* Judul + perusahaan tidak boleh terpisah dari bullet pertamanya */}
+                <View wrap={false} minPresenceAhead={30}>
+                  <View style={styles.row}>
                     <View style={{ flex: 1, marginRight: 8 }}>
-                        <Text style={styles.bold}>{roleTitle}</Text>
-                        {roleSubtitle ? <Text style={styles.bold}>{roleSubtitle}</Text> : null}
+                      <Text style={styles.bold}>{roleTitle}</Text>
+                      {roleSubtitle ? <Text style={styles.bold}>{roleSubtitle}</Text> : null}
                     </View>
                     <Text style={[styles.bold, { textAlign: "right" }]}>{period}</Text>
-                    </View>
-                <Text style={styles.italic}>
-                  {exp.company}
-                  {exp.location ? `, ${exp.location}` : ""}
-                </Text>
+                  </View>
+                  <Text style={styles.italic}>
+                    {exp.company}
+                    {exp.location ? `, ${exp.location}` : ""}
+                  </Text>
+                </View>
                 {desc &&
                   desc
                     .split("\n")
                     .filter(Boolean)
                     .map((line, i) => (
-                      <Text key={i} style={styles.bullet}>
-                        • {line}
-                      </Text>
+                      <View key={i} style={styles.bulletRow} wrap={false}>
+                        <Text style={styles.bulletDot}>•</Text>
+                        <Text style={styles.bulletText}>{line}</Text>
+                      </View>
                     ))}
               </View>
             );
@@ -167,7 +184,7 @@ export function CVDocument({
       key: "projects",
       node: (
         <>
-          <Text style={styles.sectionTitle}>{L("projects", lang)}</Text>
+          <SectionTitle>{L("projects", lang)}</SectionTitle>
           {projects.map((p) => {
             const pTitle = pick(p.title, p.title_en, lang);
             const pDesc = pick(p.description, p.description_en, lang);
@@ -189,13 +206,16 @@ export function CVDocument({
       key: "education",
       node: (
         <>
-          <Text style={styles.sectionTitle}>{L("education", lang)}</Text>
+          <SectionTitle>{L("education", lang)}</SectionTitle>
           {education.map((ed) => (
             <Text key={ed.id} style={styles.sectionBody}>
               <Text style={styles.bold}>{ed.degree || ed.school}</Text>
               {ed.degree ? ` — ${ed.school}` : ""}
               {[ed.period_start, ed.period_end].filter(Boolean).length > 0
-                ? ` (${[ed.period_start, ed.period_end].filter(Boolean).join(" – ")})`
+                ? ` (${[ed.period_start, ed.period_end]
+                    .filter(Boolean)
+                    .map((p) => formatMonthYear(p, lang))
+                    .join(" – ")})`
                 : ""}
               {ed.meta ? ` · ${ed.meta}` : ""}
             </Text>
@@ -210,7 +230,7 @@ export function CVDocument({
       key: "certificates",
       node: (
         <>
-          <Text style={styles.sectionTitle}>{L("certifications", lang)}</Text>
+          <SectionTitle>{L("certifications", lang)}</SectionTitle>
           <Text style={styles.sectionBody}>{certificates.map((c) => c.title).join(" · ")}</Text>
         </>
       ),
@@ -224,41 +244,76 @@ export function CVDocument({
           <Text style={styles.name}>{name.toUpperCase()}</Text>
           {title ? <Text style={styles.tagline}>{title}</Text> : null}
 
-          <View style={styles.contactRow}>
-            {profile?.location && <Text style={styles.contactText}>{profile.location}</Text>}
-
-            {profile?.location && profile?.email && <Text style={styles.contactSep}>|</Text>}
-            {profile?.email && (
-              <Link src={`mailto:${profile.email}`} style={styles.contactText}>
-                <Text>{profile.email}</Text>
-              </Link>
-            )}
-
-            {profile?.email && profile?.phone && <Text style={styles.contactSep}>|</Text>}
-            {profile?.phone && waUrl && (
-              <Link src={waUrl} style={styles.contactText}>
-                <Text>{profile.phone}</Text>
-              </Link>
-            )}
-
-            {profile?.phone && linkedinUrl && <Text style={styles.contactSep}>|</Text>}
-            {linkedinUrl && (
-              <Link src={linkedinUrl} style={styles.contactText}>
-                <Text>{linkedinDisplay}</Text>
-              </Link>
-            )}
-          </View>
+          {/* Kontak dibagi dua baris supaya tidak ada pemisah "|" yang menggantung */}
+          <ContactRow
+            first
+            items={[
+              profile?.location ? <Text key="location" style={styles.contactText}>{profile.location}</Text> : null,
+              profile?.email ? (
+                <Link key="email" src={`mailto:${profile.email}`} style={styles.contactText}>
+                  <Text>{profile.email}</Text>
+                </Link>
+              ) : null,
+              profile?.phone && waUrl ? (
+                <Link key="phone" src={waUrl} style={styles.contactText}>
+                  <Text>{profile.phone}</Text>
+                </Link>
+              ) : null,
+            ]}
+          />
+          <ContactRow
+            items={[
+              linkedinUrl ? (
+                <Link key="linkedin" src={linkedinUrl} style={styles.contactText}>
+                  <Text>{linkedinDisplay}</Text>
+                </Link>
+              ) : null,
+              <Link key="website" src={WEBSITE_URL} style={styles.contactText}>
+                <Text>{WEBSITE_URL.replace(/^https?:\/\//, "")}</Text>
+              </Link>,
+            ]}
+          />
         </View>
 
-        <View style={styles.hr} />
-
-        {sections.map((sec, i) => (
+        {sections.map((sec) => (
           <View key={sec.key}>
             {sec.node}
-            {i < sections.length - 1 && <View style={styles.hr} />}
           </View>
         ))}
       </Page>
     </Document>
   );
+}
+
+// Garis pemisah + judul section dalam satu blok yang tidak boleh terpecah,
+// dan harus ada sisa ruang untuk isinya, supaya tidak tertinggal sendirian di bawah halaman.
+function SectionTitle({ children }: { children: string }) {
+  return (
+    <View style={styles.sectionHead} wrap={false} minPresenceAhead={40}>
+      <Text style={styles.sectionTitle}>{children}</Text>
+    </View>
+  );
+}
+
+function ContactRow({ items, first }: { items: (ReactElement | null)[]; first?: boolean }) {
+  const present = items.filter((item): item is ReactElement => item !== null);
+  if (present.length === 0) return null;
+  return (
+    <View style={[styles.contactRow, { marginTop: first ? 6 : 2 }]}>
+      {present.map((item, i) => (
+        <Fragment key={item.key ?? i}>
+          {i > 0 && <Text style={styles.contactSep}>|</Text>}
+          {item}
+        </Fragment>
+      ))}
+    </View>
+  );
+}
+
+// "Early Warning Monitoring Officer – QA Financing Risk Department" -> [jabatan, departemen].
+// Butuh spasi di kedua sisi tanda hubung supaya "Back-end Developer" tidak ikut terpecah.
+export function splitRole(text: string): [string, string | null] {
+  const match = text.match(/^(.*?)\s+[–-]\s+(.*)$/);
+  if (match) return [match[1].trim(), match[2].trim()];
+  return [text, null];
 }

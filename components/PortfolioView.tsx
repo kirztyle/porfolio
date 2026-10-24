@@ -7,7 +7,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { dictionary, pick, t, type Lang } from "@/lib/I18n";
 import ProjectGrid from "@/components/projects/ProjectGrid";
 import WelcomeSplash from "@/components/WelcomeSplash";
-import { formatDuration } from "@/lib/duration";
+import ExperienceList from "@/components/ExperienceList";
+import CVDownloadDialog from "@/components/CVDownloadDialog";
 import type {
   Profile,
   Experience,
@@ -35,6 +36,7 @@ export default function PortfolioView({
   certificates: Certificate[];
 }) {
   const [lang, setLang] = useState<Lang>("id");
+  const [cvOpen, setCvOpen] = useState(false);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(LANG_STORAGE_KEY);
@@ -57,7 +59,7 @@ export default function PortfolioView({
       : "Deskripsi belum diatur. Buka /admin untuk melengkapi profil.");
 
   return (
-    <main className="min-h-screen bg-white text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-200">
+    <main className="min-h-screen bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-200">
       <WelcomeSplash
         name={name}
         photoUrl={profile?.photo_url}
@@ -71,8 +73,10 @@ export default function PortfolioView({
         onLangChange={changeLang}
       />
 
+      <CVDownloadDialog open={cvOpen} lang={lang} onClose={() => setCvOpen(false)} />
+
       {/* Top bar / Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-slate-100/80 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/" className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
             {name.split(' e')[0]}<span className="text-blue-600 dark:text-blue-500">.</span>
@@ -94,15 +98,17 @@ export default function PortfolioView({
               </a>
             </nav>
             <LanguageToggle lang={lang} onChange={changeLang} />
-             <a href={`/api/cv/pdf?lang=${lang}`}
-              download
+            <button
+              type="button"
+              onClick={() => setCvOpen(true)}
+              aria-haspopup="dialog"
               className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               CV
-            </a>
+            </button>
             <ThemeToggle />
           </div>
         </div>
@@ -178,6 +184,11 @@ export default function PortfolioView({
       </div>
 
       {/* Experience */}
+      <div className="relative isolate overflow-hidden">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+          <div className="blob float-b -left-24 top-24 h-72 w-72 bg-blue-500" />
+          <div className="blob float-a -right-24 bottom-0 h-72 w-72 bg-emerald-400" />
+        </div>
       <section id="experience" className="reveal mx-auto max-w-5xl px-6 py-12">
         <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
           {t(dictionary.experience.heading, lang)}
@@ -186,77 +197,18 @@ export default function PortfolioView({
           {t(dictionary.experience.subtitle, lang)}
         </p>
 
-        <div className="mt-8 space-y-8">
-          {experiences.length === 0 && <EmptyState label={t(dictionary.experience.empty, lang)} />}
-          {experiences.map((exp) => {
-            const role = pick(exp.role, exp.role_en, lang);
-            const expDescription = pick(exp.description, exp.description_en, lang);
-            const duration = formatDuration(exp.period_start, exp.period_end, lang);
-            const presentLabel = t(dictionary.experience.present, lang);
-            const relatedProjects = projects.filter((p) => p.experience_id === exp.id);
-
-            return (
-              <div key={exp.id} className="grid grid-cols-1 gap-4 sm:grid-cols-[180px_1fr] sm:gap-8">
-                <div className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                  {exp.period_start} {exp.period_end ? `— ${exp.period_end}` : `— ${presentLabel}`}
-                  {duration && (
-                    <span className="mt-0.5 block text-xs text-slate-400 dark:text-slate-500">
-                      {duration}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                    {role}
-                  </h3>
-                  <p className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">
-                    {exp.company}
-                    {exp.location && (
-                      <span className="text-slate-400"> · {exp.location}</span>
-                    )}
-                  </p>
-                  {expDescription && (
-                    <ul className="mt-3 space-y-2">
-                      {expDescription
-                        .split("\n")
-                        .filter(Boolean)
-                        .map((line, j) => (
-                          <li
-                            key={j}
-                            className="flex gap-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400"
-                          >
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600" />
-                            <span>{line}</span>
-                          </li>
-                        ))}
-                    </ul>
-                  )}
-                  {relatedProjects.length > 0 && (
-                    <div className="mt-4 flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                        {t(dictionary.experience.relatedProjects, lang)}
-                      </span>
-                      {relatedProjects.map((p) => (
-                        <a
-                          key={p.id}
-                          href={`#project-${p.id}`}
-                          className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20 transition-colors hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:ring-blue-500/30 dark:hover:bg-blue-900/40"
-                        >
-                          {pick(p.title, p.title_en, lang)}
-                          <span aria-hidden="true">↓</span>
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {experiences.length === 0 ? (
+          <div className="mt-8">
+            <EmptyState label={t(dictionary.experience.empty, lang)} />
+          </div>
+        ) : (
+          <ExperienceList experiences={experiences} projects={projects} lang={lang} />
+        )}
       </section>
+      </div>
 
       {/* Skills / Expertise */}
-      <section id="skills" className="reveal bg-slate-50 dark:bg-slate-900/50 py-12">
+      <section id="skills" className="reveal bg-slate-200/60 dark:bg-slate-900/50 py-12">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
             {t(dictionary.skills.heading, lang)}
@@ -270,7 +222,7 @@ export default function PortfolioView({
             {skills.map((s) => (
               <div
                 key={s.id}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700"
+                className="rounded-xl bg-white p-6 shadow-xl shadow-slate-400/40 ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700 dark:shadow-black/50"
               >
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900 dark:text-white">
                   {s.category}
@@ -314,7 +266,7 @@ export default function PortfolioView({
       </section>
 
       {/* Education & Certificates */}
-      <section id="education" className="reveal bg-slate-50 dark:bg-slate-900/50 py-12">
+      <section id="education" className="reveal bg-slate-200/60 dark:bg-slate-900/50 py-12">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
             {t(dictionary.background.heading, lang)}
@@ -378,7 +330,7 @@ export default function PortfolioView({
       </section>
 
       {/* Contact Footer */}
-      <footer id="contact" className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+      <footer id="contact" className="border-t border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-950">
         <div className="mx-auto max-w-5xl px-6 py-10">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
             {t(dictionary.contact.heading, lang)}

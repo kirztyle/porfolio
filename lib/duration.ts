@@ -39,6 +39,23 @@ function parseMonthYear(text?: string | null): Date | null {
   return null;
 }
 
+const MONTH_NAMES: Record<"id" | "en", string[]> = {
+  id: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+};
+
+/**
+ * Menampilkan periode ("August 2025", "2025-08", "08/2025") dengan nama bulan sesuai bahasa.
+ * Teks yang hanya tahun atau tidak bisa di-parse dikembalikan apa adanya.
+ */
+export function formatMonthYear(text: string | null | undefined, lang: "id" | "en" = "id"): string {
+  const trimmed = (text || "").trim();
+  if (/^\d{4}$/.test(trimmed)) return trimmed;
+  const date = parseMonthYear(trimmed);
+  if (!date) return trimmed;
+  return `${MONTH_NAMES[lang][date.getMonth()]} ${date.getFullYear()}`;
+}
+
 /**
  * Menghitung durasi dari period_start ke period_end dalam format "X tahun Y bulan".
  * Kalau period_end kosong / "Present" / "Sekarang", dihitung sampai bulan berjalan (dinamis).

@@ -46,7 +46,7 @@ export default function ProjectGrid({ projects, lang }: { projects: Project[]; l
             <div
               key={p.id}
               id={`project-${p.id}`}
-              className="group relative flex scroll-mt-24 flex-col target:ring-2 target:ring-blue-500 dark:target:ring-blue-400 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 transition-all focus-within:ring-blue-500 hover:shadow-md hover:ring-slate-300 dark:bg-slate-800 dark:ring-slate-700 dark:hover:ring-slate-600"
+              className="group relative flex scroll-mt-24 flex-col target:ring-2 target:ring-blue-500 dark:target:ring-blue-400 overflow-hidden rounded-xl bg-white shadow-xl shadow-slate-400/40 ring-1 ring-slate-200 transition-all focus-within:ring-blue-500 hover:shadow-2xl hover:ring-slate-300 dark:bg-slate-800 dark:ring-slate-700 dark:hover:ring-slate-600 dark:shadow-black/50"
             >
               <button
                 type="button"
